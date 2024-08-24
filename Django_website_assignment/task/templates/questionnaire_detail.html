@@ -1,0 +1,37 @@
+{% extends 'base.html' %} {% block title %}questionnaire{% endblock %} 
+
+{% block content %}
+<h2>{{ questionnaire.title }}</h2>
+<form method="post">
+  {% csrf_token %}
+  {% for item in questions_with_options %}
+      <div class="question">
+          <p>{{ item.question.text }}</p>
+          <ul>
+              {% for option in item.options %}
+                  <li>
+                      <label>
+                          <input type="radio" name="question_{{ item.question.id }}" value="{{ option.0 }}" 
+                          {% if option.2 %}checked{% endif %}
+                          {% if is_staff %}disabled{% endif %}>
+                          {{ option.1 }}
+                          {% if option.2 and option.0 == item.correct_answer_id %}
+                              <span style="color: green;">(Correct)</span>
+                          {% elif option.2 and option.0 != item.correct_answer_id %}
+                              <span style="color: red;">(Chosen Answer)</span>
+                          {% endif %}
+                      </label>
+                  </li>
+              {% endfor %}
+          </ul>
+          {% if not item.client_answer_is_correct and answered_all_questions or is_staff %}
+              <p><strong>Correct Answer:</strong> {{ item.correct_answer_text }}</p>
+          {% endif %}
+      </div>
+  {% endfor %}
+    {% if not is_staff %}
+    <button type="submit">Submit</button>
+    <button type="submit" name="clear_answers">Clear Answers</button>
+    {% endif %}
+</form>
+{% endblock %}

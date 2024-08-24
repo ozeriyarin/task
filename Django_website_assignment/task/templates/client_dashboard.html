@@ -1,0 +1,22 @@
+{% extends 'base.html' %} {% block title %}Client Account{% endblock %}
+
+{% block content %}
+<h2>Available Questionnaires</h2>
+{% if questionnaires %}
+  <ul>
+    {% for questionnaire in questionnaires %}
+    <li>
+      <a href="{% url 'questionnaire_detail' questionnaire.id %}">{{ questionnaire.title }}</a>
+      {% if questionnaire.id in answered_questionnaires %}
+      (Answered) 
+    {% else %} 
+        (Not yet answered)
+    {% endif %}
+    <br><br/>
+    </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No questionnaires available</p>
+{% endif %}
+{% endblock %}

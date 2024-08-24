@@ -1,0 +1,53 @@
+{% extends 'base.html' %} {% block title %}Create Questionnaire{% endblock %} 
+{%block content %}
+<h2>Create New Questionnaire</h2>
+<form method="post">
+  {% csrf_token %}
+  
+  {{ form.as_p }}
+
+  <h3>Questions</h3>
+  {{ formset.management_form }}
+  <div id="formset-container">
+    {% for form in formset %}
+      <fieldset class="question-form">
+        {{ form.as_p }}
+        {% if form.instance.pk %}
+          <p><label for="{{ form.prefix }}-DELETE">Delete:</label> {{ form.DELETE }}</p>
+        {% endif %}
+      </fieldset>
+    {% endfor %}
+</div>
+
+  <button type="button" id="add-question-btn">+ Add Another Question</button><br/><br/>
+  <button type="submit">Create Questionnaire</button>
+</form>
+
+<script>
+  const formsetContainer = document.getElementById('formset-container');
+  const addQuestionBtn = document.getElementById('add-question-btn');
+  const totalFormsInput = document.getElementById('id_form-TOTAL_FORMS');
+
+  let totalForms = parseInt(totalFormsInput.value);
+
+  addQuestionBtn.addEventListener('click', function() {
+    const newForm = formsetContainer.children[0].cloneNode(true);
+    const formRegex = RegExp(`form-(\\d+)-`, 'g');
+
+    newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${totalForms}-`);
+    
+    formsetContainer.appendChild(newForm);
+    totalForms++;
+    totalFormsInput.value = totalForms;
+  });
+</script>
+
+<style>
+  .question-form {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+</style>
+{% endblock %}
+
